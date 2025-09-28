@@ -1,0 +1,73 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5dc;
+    color: #5c4033;
+    text-align: center;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #e6d7b8;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+#progress {
+    margin-top: 10px;
+    font-weight: bold;
+}
+#preview {
+    background: #f5f5dca1;
+    display: block;
+    margin: 20px auto; 
+    max-width: 480px;
+    max-height: 320px;
+}
+#preview {
+    margin-top: 20px;
+    border: 2px solid #5c4033;
+}
+.download-btn {
+    padding: 12px 24px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+.download-btn:hover {
+    background: #218838;
+}
+
+.settings {
+    margin: 16px 0;
+    padding: 16px;
+    background: #cfbc99ec;
+    border-radius: 8px;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    font-size: 14px;
+}
+.settings label {
+    display: flex;
+    background: #e7e1c7;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    gap: 4px;
+    font-weight: bold;
+    border-radius: 9px;
+}
+.settings input {
+    padding: 6px;
+    border: 1px solid #4a3d38;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}

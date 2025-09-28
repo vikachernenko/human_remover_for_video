@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Human Remover Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Human Remover</h1>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="video" required>
+        <button type="submit">Начать обработку</button>
+
+        <div class="settings">
+            <label>Уверенность (для модели YOLO):
+                <input type="number" name="conf" value="0.25" step="0.01" min="0" max="1">
+            </label>
+            <label>Пропуск кадров:
+                <input type="number" name="skip" value="1" min="1" max="10">
+            </label>
+            <label>Минимальная площадь:
+                <input type="number" name="min_area" value="1000" step="100" min="0">
+            </label>
+            <label>Максимальная площадь:
+                <input type="number" name="max_area" value="1000000" step="1000" min="0">
+            </label>
+        </div>
+    </form>
+
+    <div id="progress">Анализ: 0%, Рендер: 0%</div>
+
+    <img id="preview" width="480" height="320" alt="Video Preview">
+
+    <div id="downloadSection" style="display:none;">
+        <button id="downloadButton">Скачать результат</button>
+    </div>
+</div>
+
+<script>
+const form = document.getElementById("uploadForm");
+const preview = document.getElementById("preview");
+const progressEl = document.getElementById("progress");
+const downloadSection = document.getElementById("downloadSection");
+const downloadButton = document.getElementById("downloadButton");
+
+let currentOutputFile = null;
+
+form.addEventListener("submit", async e => {
+    e.preventDefault();
+    downloadSection.style.display = "none";
+    currentOutputFile = null;
+    progressEl.innerText = "Анализ: 0%, Рендер: 0%";
+
+    const formData = new FormData(form);
+    const res = await fetch("/upload", { method: "POST", body: formData });
+    const data = await res.json();
+    if (data.output) currentOutputFile = data.output;
+
+    const updatePreview = setInterval(async () => {
+        try {
+            preview.src = "/preview_frame?" + new Date().getTime();
+            const progRes = await fetch("/progress");
+            const prog = await progRes.json();
+
+            if (!prog.done) {
+                let analyzePct = prog.total ? ((prog.analyze + 1)/prog.total*99.9) : 0;
+                let renderPct = prog.total ? ((prog.render + 1)/prog.total*99.9) : 0;
+                progressEl.innerText = `Анализ: ${analyzePct.toFixed(1)}%, Рендер: ${renderPct.toFixed(1)}%`;
+            } else {
+                clearInterval(updatePreview);
+                progressEl.innerText = `Анализ: 100%, Рендер: 100%`;
+                downloadSection.style.display = "block";
+            }
+        } catch(err) { console.error(err); }
+    }, 1000);
+});
+
+downloadButton.addEventListener("click", () => {
+    if (currentOutputFile) {
+        window.location.href = `/download/${encodeURIComponent(currentOutputFile)}`;
+    }
+});
+</script>
+</body>
+</html>
